@@ -10,18 +10,15 @@ def get_cursor():
     return prod_db.cursor()
 
 def close_connection():
-    """Close the database connection"""
     if prod_db:
         prod_db.close()
 
 def query_user_accounts(username):
-    """Query user accounts table to check user"""
+    #Query user accounts table to check user
     cur = get_cursor()
     cur.execute(
-        "SELECT * FROM user_accounts WHERE username = ?", (username)
-    )
+        "SELECT * FROM user_accounts WHERE username = ?", (username,))
     return cur.fetchall()
-
 
 def insert_user(username, password):
     cur = get_cursor()

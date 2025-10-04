@@ -33,7 +33,7 @@ body {
 .header button {
   padding: 10px 20px;
   background: linear-gradient(to top, #005dc2, #00c6ff);;
-  color: #fff;
+  color: #00c6ff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -46,7 +46,7 @@ a {
   padding: 15px 30px;
   background: linear-gradient(to top, #005dc2, #00c6ff);
   text-align: center;
-  color: white;
+  color: #fff;
   font-family: Tahoma, sans-serif;
   font-weight: bold;
   text-decoration: none;
@@ -99,7 +99,7 @@ h2 {
   margin: 0 auto;      /* centers horizontally */
   padding: 15px 30px;
   background: linear-gradient(to top, #005dc2, #00c6ff);
-  color: white;
+  color: 00c6ff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -133,11 +133,11 @@ input {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin: 30px auto;
+  margin: 25px auto;
   font-family: Tahoma, sans-serif;
-  color: white;
+  color: rgb(0, 0, 0);
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 450;
   padding: 12px 18px;
   font-size: 16px;
   border: 2px solid rgb(177, 100, 196);

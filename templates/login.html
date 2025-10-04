@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>HackRU Project</title>
+  <title>HackRU Project - Login</title>
   <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
@@ -13,9 +13,11 @@
   <form action="/login" method="POST">
     <input type="text" placeholder="Enter Username" name="username" required>
     <input type="password" placeholder="Enter Password" name="password" required>
-    <input type="submit" value="Sign In" class="btn btn-primary" style="width: 180px; margin: 5px auto;">
-    <a href="/signup" class="btn btn-primary d-block mb-1" style="width: 180px; margin: 5px auto;">Sign Up</a>
+    <input type="submit" value="Login" class="btn btn-primary" style="width: 180px; margin: 5px auto;">
   </form>
+  <p style="text-align:center; margin-top:10px;">
+    Don't have an account? <a href="/signup" style="color:#07f0f5;">Sign Up</a>
+  </p>
 </div>
 </body>
 </html>
