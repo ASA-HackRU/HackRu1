@@ -1,6 +1,10 @@
 header {
-  background: #464747;
+  background: #07213c;
   padding: 20px 60px;
+}
+
+body {
+  background: #07213c;
 }
 
 .header {
@@ -40,7 +44,7 @@ header {
 
 p {
   text-align: center;
-  color: rgb(177, 100, 196);
+  color: rgb(255, 255, 255);
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -51,9 +55,15 @@ p {
   height: 600px;  /* sets vertical size */
 }
 
+h1 {
+  text-align: center;
+  color: rgb(252, 252, 252);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 h2 {
   text-align: center;
-  color: rgb(177, 100, 196);
+  color: rgb(252, 252, 252);
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -61,7 +71,7 @@ h2 {
   display: block;      /* makes it a block element */
   margin: 0 auto;      /* centers horizontally */
   padding: 15px 30px;
-  background-color: rgb(177, 100, 196);
+  background: linear-gradient(to top, #005dc2, #07f0f5);
   color: white;
   border: none;
   border-radius: 10px;
