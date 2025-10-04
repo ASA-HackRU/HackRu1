@@ -1,10 +1,10 @@
 header {
-  background: #07213c;
+  background: #011d38;
   padding: 20px 60px;
 }
 
 body {
-  background: #07213c;
+  background: #011d38;
 }
 
 .header {
@@ -14,7 +14,7 @@ body {
   align-items: center;           /* vertical alignment */
   flex-wrap: nowrap;             /* prevent stacking */
   color: rgb(177, 100, 196);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Tahoma, sans-serif;
 }
 
 .header h1 {
@@ -38,6 +38,22 @@ body {
   font-size: 16px;
 }
 
+a {
+  display: block;      /* makes it a block element */
+  margin: 0 auto;      /* centers horizontally */
+  padding: 15px 30px;
+  background: linear-gradient(to top, #005dc2, #07f0f5);
+  text-align: center;
+  color: white;
+  font-family: Tahoma, sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: large;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
 .header button:hover {
   background-color: #a35ea0;
 }
@@ -45,7 +61,7 @@ body {
 p {
   text-align: center;
   color: rgb(255, 255, 255);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Tahoma, sans-serif;
 }
 
 .logo {
@@ -58,13 +74,14 @@ p {
 h1 {
   text-align: center;
   color: rgb(252, 252, 252);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Tahoma, sans-serif;
 }
 
 h2 {
   text-align: center;
   color: rgb(252, 252, 252);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Tahoma, sans-serif;
+  font-weight: normal;
 }
 
 .center-btn {
@@ -76,6 +93,7 @@ h2 {
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  font-family: Tahoma, sans-serif;
 }
 
 .center-btn:hover {

@@ -1,0 +1,28 @@
+
+
+<!-- Div tag to hold the sign in -->
+    <div class="container">
+        <div class="row">
+        <!-- Section to capture sign in details -->
+            <div class="col-md-4 bordered-column">
+                <h3>Sign In</h3>
+                <form action="/signin" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">User Name</label>
+                        <input type="text" class="form-control" name="username" id="username" placeholder="User Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">Password</label>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark mt-3">Sign In</button>
+                </form>
+            </div>
+            <div class="col-md-7 bordered-column">
+                <p>
+                    Welcome to Ultimate Productivity!
+                </p>
+            </div>
+        </div>
+    </div>
+
