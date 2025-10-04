@@ -45,6 +45,31 @@ p {
 }
 
 .logo {
-  width: 80px;
-  height: auto;
+  display: block;
+  margin: 0 auto;
+  width: 600px;
+  height: 600px;  /* sets vertical size */
 }
+
+h2 {
+  text-align: center;
+  color: rgb(177, 100, 196);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.center-btn {
+  display: block;      /* makes it a block element */
+  margin: 0 auto;      /* centers horizontally */
+  padding: 15px 30px;
+  background-color: rgb(177, 100, 196);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.center-btn:hover {
+  background-color: #a35ea0;
+}
+
+
