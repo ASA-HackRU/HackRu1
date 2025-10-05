@@ -6,6 +6,7 @@ from flask import redirect, flash
 from dotenv import load_dotenv
 import google.generativeai as genai
 import os
+import sqlite3
 
 database.init_db()
 
@@ -14,7 +15,7 @@ database.init_db()
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.secret_key = os.urandom(24)  #session cookies
+app.secret_key = os.urandom(24)  # session cookies
 Session(app)
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -55,13 +56,7 @@ def login_route():
 
 # Load environment variables
 load_dotenv()
-genai.api_key = os.getenv("GENAI_API_KEY")  #refrs to .env for api key (redacted)
-
-# # Flask setup
-# app.config["SESSION_PERMANENT"] = False
-# app.config["SESSION_TYPE"] = "filesystem"
-# app.secret_key = os.urandom(24)  #session cookies
-# Session(app)
+genai.api_key = os.getenv("GENAI_API_KEY")  # refers to .env for api key (redacted)
 
 # Session memory helper
 def init_memory():
@@ -74,7 +69,7 @@ def ask():
     init_memory()
     user_message = request.json.get("message")
 
-    # Add user message to system memory of gemini
+    # Add user message to system memory of Gemini
     session["conversation"].append({"role": "user", "content": user_message})
 
     try:
@@ -113,6 +108,18 @@ def chatbot():
 @app.route('/track')
 def track():
     return render_template("track.html")
+
+
+@app.route('/analysis')
+def analysis():
+    # FIXED: point to correct DB and table
+    conn = sqlite3.connect("fortune500_news.db")
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT * FROM news ORDER BY id DESC")
+    articles = c.fetchall()
+    conn.close()
+    return render_template("analysis.html", articles=articles)
 
 # Run Flask
 if __name__ == "__main__":

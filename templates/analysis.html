@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ImpulseScore Analysis</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    .article-container {
+      width: 80%;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .article {
+      background: #02294d;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      font-family: Tahoma, sans-serif;
+    }
+    .article h3 {
+      color: rgb(177, 100, 196);
+      margin-bottom: 10px;
+    }
+    .article p {
+      font-size: 16px;
+    }
+    .article a {
+      color: #00c6ff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>ImpulseScore News Analysis</h1>
+  </header>
+
+  <div class="article-container">
+    {% for article in articles %}
+      <div class="article">
+        <h3>{{ article['company'] }} - {{ article['title'] }}</h3>
+        <p>{{ article['description'] }}</p>
+        <p><strong>Direction:</strong> {{ article['direction'] }} | <strong>Strength:</strong> {{ article['strength'] }} | <strong>Impulse Score:</strong> {{ article['impulse_score'] }}</p>
+        <p><strong>Confidence:</strong> {{ article['confidence'] }}</p>
+        <p>{{ article['explanation'] }}</p>
+        <p><a href="{{ article['url'] }}" target="_blank">Read full article</a></p>
+        <p><strong>Published:</strong> {{ article['timestamp'] }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
