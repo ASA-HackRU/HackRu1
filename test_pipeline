@@ -1,0 +1,16 @@
+# test_pipeline.py
+# Quick standalone script to test the pipeline
+# (app.py stays untouched)
+
+from newsapi import run_pipeline
+
+if __name__ == "__main__":
+    API_TOKEN = "MD9SRQGgfM8S8pmV3pxCFaP51x94WtB6C5iwPlSo"
+
+    results = run_pipeline(API_TOKEN, category="business", limit=5)
+
+    for r in results:
+        print("\n---")
+        print("Title:", r["title"])
+        print("URL:", r["url"])
+        print("ImpulseScore:", r["impulse"])

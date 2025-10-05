@@ -1,27 +1,31 @@
 import sqlite3
-from datetime import datetime
 
-# Configure CS50 Library to use SQLite database
-#prod_db = SQL("sqlite:///productivity_final_proj.db")
-prod_db = sqlite3.connect('productivity_final_proj.db', check_same_thread=False)
-prod_db.row_factory = sqlite3.Row
+DB_NAME = "users.db"
 
-def get_cursor():
-    return prod_db.cursor()
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              username TEXT UNIQUE NOT NULL,
+              password TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-def close_connection():
-    if prod_db:
-        prod_db.close()
+def add_user(username, password):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    conn.commit()
+    conn.close()
 
-def query_user_accounts(username):
-    #Query user accounts table to check user
-    cur = get_cursor()
-    cur.execute(
-        "SELECT * FROM user_accounts WHERE username = ?", (username,))
-    return cur.fetchall()
-
-def insert_user(username, password):
-    cur = get_cursor()
-    cur.execute("INSERT INTO user_accounts (username, password) VALUES (?, ?)", (username, password))
-    prod_db.commit()
-    return cur.lastrowid
+def get_user(username):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = c.fetchone()
+    conn.close()
+    return user

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>HackRU Project - Gemini Chat</title>
-  <link rel="stylesheet" href="static/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <style>
     body { font-family: Arial, sans-serif; background:#36bcd4; text-align:center; }
     #chatbox { width: 500px; margin: 40px auto; background: #011d38; border-radius: 10px; padding: 20px; }
@@ -38,7 +38,8 @@
       const res = await fetch("/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input.value })
+        body: JSON.stringify({ message: input.value }),
+        credentials: "same-origin"   // <-- important to keep session
       });
       const data = await res.json();
 
