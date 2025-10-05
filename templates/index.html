@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>HackRU Project</title>
-  <link rel="stylesheet" href="static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
   <header>
@@ -16,6 +16,175 @@
       </div>
     </div>
   </header>
-  <p>Your Trading Impulse, Backed by AI.</p>
+
+  <main>
+    <p class="tagline">Your Trading Impulse, Backed by AI.</p>
+
+    <!-- Portfolio tracker -->
+    <section class="input-section">
+      <h2>Add Stock</h2>
+      <form id="addStockForm">
+        <input type="text" id="companyName" placeholder="Company Name (e.g., Apple)" required />
+        <input type="number" step="0.01" id="priceBought" placeholder="Price Bought ($)" required />
+        <input type="number" id="quantity" placeholder="Quantity" required />
+        <button type="submit" id="addBtn">Add to Portfolio</button>
+      </form>
+    </section>
+
+    <section class="portfolio-section">
+      <h2>Portfolio</h2>
+      <table id="portfolioTable">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Ticker</th>
+            <th>Price Bought</th>
+            <th>Quantity</th>
+            <th>Current Price</th>
+            <th>% Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- populated by JS -->
+        </tbody>
+      </table>
+    </section>
+
+    <section class="summary-section">
+      <h2>Portfolio Summary</h2>
+      <div id="portfolioSummary">
+        <p>Total Worth: <span id="totalWorth">$0.00</span></p>
+        <p>Total Growth: <span id="totalGrowth">0.00%</span></p>
+        <button id="refreshPrices" class="center-btn">Refresh Prices</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 AImpulse — AI-Driven Financial Insight</p>
+  </footer>
+
+<script>
+(async function () {
+  const portfolioTableBody = document.querySelector("#portfolioTable tbody");
+  const totalWorthEl = document.getElementById("totalWorth");
+  const totalGrowthEl = document.getElementById("totalGrowth");
+  const addStockForm = document.getElementById("addStockForm");
+  const addBtn = document.getElementById("addBtn");
+  const refreshBtn = document.getElementById("refreshPrices");
+
+  // Utility formatters
+  function fmtCurrency(x) {
+    return "$" + (Number(x) || 0).toFixed(2);
+  }
+  function fmtPercent(x) {
+    return (Number(x) || 0).toFixed(2) + "%";
+  }
+
+  // Render table rows from portfolio array
+  function renderTable(portfolio) {
+    portfolioTableBody.innerHTML = "";
+    let totalBought = 0;
+    let totalCurrent = 0;
+
+    for (const s of portfolio) {
+      const tr = document.createElement("tr");
+
+      const pct = Number(s.percentage_change || 0);
+      const pctClass = pct >= 0 ? "positive" : "negative";
+
+      tr.innerHTML = `
+        <td>${s.company_name}</td>
+        <td>${s.ticker || ""}</td>
+        <td>${fmtCurrency(s.price_bought)}</td>
+        <td>${s.quantity}</td>
+        <td>${fmtCurrency(s.current_price)}</td>
+        <td class="${pctClass}">${fmtPercent(pct)}</td>
+      `;
+
+      portfolioTableBody.appendChild(tr);
+
+      totalBought += Number(s.price_bought || 0) * Number(s.quantity || 0);
+      totalCurrent += Number(s.current_price || 0) * Number(s.quantity || 0);
+    }
+
+    totalWorthEl.textContent = fmtCurrency(totalCurrent);
+    const totalPct = totalBought ? ((totalCurrent - totalBought) / totalBought) * 100 : 0;
+    totalGrowthEl.textContent = (totalPct >= 0 ? "+" : "") + fmtPercent(totalPct);
+    if (totalPct >= 0) {
+      totalGrowthEl.classList.add("positive");
+      totalGrowthEl.classList.remove("negative");
+    } else {
+      totalGrowthEl.classList.add("negative");
+      totalGrowthEl.classList.remove("positive");
+    }
+  }
+
+  // Fetch portfolio from backend
+  async function fetchPortfolio() {
+    try {
+      const res = await fetch("/api/portfolio");
+      const j = await res.json();
+      if (j.ok) {
+        renderTable(j.portfolio || []);
+      } else {
+        console.error("Failed to fetch portfolio", j);
+      }
+    } catch (err) {
+      console.error("Error fetching portfolio", err);
+    }
+  }
+
+  // Add stock handler
+  addStockForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    addBtn.disabled = true;
+    addBtn.textContent = "Adding...";
+
+    const companyName = document.getElementById("companyName").value.trim();
+    const priceBought = document.getElementById("priceBought").value;
+    const quantity = document.getElementById("quantity").value;
+
+    try {
+      const res = await fetch("/api/add_stock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company_name: companyName, price_bought: priceBought, quantity: quantity })
+      });
+      const j = await res.json();
+      if (res.ok && j.ok) {
+        await fetchPortfolio(); // refresh
+        addStockForm.reset();
+      } else {
+        const err = j && j.error ? j.error : "Unknown error";
+        alert("Could not add stock: " + err);
+      }
+    } catch (err) {
+      alert("Error adding stock: " + err.message);
+    } finally {
+      addBtn.disabled = false;
+      addBtn.textContent = "Add to Portfolio";
+    }
+  });
+
+  // Refresh prices button
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "Updating...";
+    try {
+      await fetch("/api/update_prices", { method: "POST" });
+      await fetchPortfolio();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "Refresh Prices";
+    }
+  });
+
+  // initial load
+  await fetchPortfolio();
+})();
+</script>
 </body>
 </html>

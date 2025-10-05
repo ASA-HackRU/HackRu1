@@ -2,17 +2,30 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Sign Up</title>
+  <title>Login</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
   <h2>Login</h2>
-  <form action="/login" method="post">
+  <form action="/login" method="post" style="text-align:center;">
     <input type="text" name="username" placeholder="Username" required /><br><br>
     <input type="password" name="password" placeholder="Password" required /><br><br>
-    <a href="/home" class="btn btn-primary d-block mb-1" style="width: 180px; margin: 5px auto;">Login</a>
-    <p>No Account?</p>
-    <a href="/signup" class="btn btn-primary d-block mb-1" style="width: 180px; margin: 5px auto;">Sign Up</a>
+
+    <button type="submit"
+      style="background: linear-gradient(to right, #6ec1ff, #007bff); color: white; font-family: 'Tamaho', sans-serif; font-weight: bold; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 180px; display: block; margin: 10px auto; text-align: center; transition: all 0.3s ease;"
+      onmouseover="this.style.background='linear-gradient(to right, #007bff, #0056b3)';"
+      onmouseout="this.style.background='linear-gradient(to right, #6ec1ff, #007bff)';">
+      Login
+    </button>
+
+    <p style="color:white;">No Account?</p>
+
+    <a href="/signup"
+       style="background: linear-gradient(to right, #6ec1ff, #007bff); color: white; font-family: 'Tamaho', sans-serif; font-weight: bold; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; width: 180px; display: block; margin: 10px auto; text-align: center; text-decoration: none; transition: all 0.3s ease;"
+       onmouseover="this.style.background='linear-gradient(to right, #007bff, #0056b3)';"
+       onmouseout="this.style.background='linear-gradient(to right, #6ec1ff, #007bff)';">
+       Sign Up
+    </a>
   </form>
 </body>
 </html>

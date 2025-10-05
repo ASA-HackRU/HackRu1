@@ -1,59 +1,48 @@
-class SentimentAnalyzer:
-    BANNED_TERMS = ["palestine", "israel"]
+import requests
+from textblob import TextBlob
 
-    def __init__(self, model_name="mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis"):
-        self.model = pipeline("text-classification", model=model_name)
+# Your API key from https://www.thenewsapi.com/
+API_KEY = "YOUR_API_KEY_HERE"
 
-    def analyze_text(self, text):
-        if not text:
-            return {
-                "strength": "neutral",
-                "impulse_score": 3,
-                "confidence": 0.0,
-                "explanation": "No content to analyze."
-            }
+def analyze_sentiment(text):
+    if not text:
+        return "Neutral", 0.0
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    if polarity > 0.05:
+        return "Positive", polarity
+    elif polarity < -0.05:
+        return "Negative", polarity
+    else:
+        return "Neutral", polarity
 
-        # Check for banned terms
-        lower_text = text.lower()
-        if any(term in lower_text for term in self.BANNED_TERMS):
-            return {
-                "strength": "neutral",
-                "impulse_score": 3,
-                "confidence": 0.0,
-                "explanation": "Content contains banned terms."
-            }
+def fetch_articles(company, limit=3):
+    url = f"https://api.thenewsapi.com/v1/news/all?api_token={API_KEY}&search={company}&language=en&limit={limit}&sort=published_at"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        articles = []
 
-        result = self.model(text, truncation=True)[0]
-        label = result["label"].lower()
-        score = float(result["score"])
+        for item in data.get("data", []):
+            title = item.get("title", "No Title")
+            description = item.get("description", "")
+            published_at = item.get("published_at", "")
+            url_link = item.get("url", "#")
 
-        # Determine strength and impulse score
-        if label == "neutral" or score < 0.5:
-            strength = "neutral"
-            impulse_value = 3
-        elif label == "positive":
-            if score >= 0.75:
-                strength = "large positive"
-                impulse_value = 5
-            else:
-                strength = "small positive"
-                impulse_value = 4
-        elif label == "negative":
-            if score >= 0.75:
-                strength = "large negative"
-                impulse_value = 1
-            else:
-                strength = "small negative"
-                impulse_value = 2
-        else:
-            strength = "neutral"
-            impulse_value = 3
+            sentiment, score = analyze_sentiment(f"{title} {description}")
 
-        explanation = f"The article suggests a {strength} movement in the stock/valuation with {score*100:.1f}% confidence."
+            articles.append({
+                "company": company,
+                "title": title,
+                "description": description,
+                "sentiment": sentiment,
+                "score": round(score, 2),
+                "timestamp": published_at,
+                "url": url_link
+            })
+        return articles
 
-        return {
-            "strength": strength,
-            "impulse_score": impulse_value,
-            "confidence": round(score, 3),
-            "explanation": explanation
-        }
+    except Exception as e:
+        print(f"Error fetching articles for {company}: {e}")
+        return []

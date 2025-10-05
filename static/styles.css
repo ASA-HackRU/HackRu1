@@ -1,3 +1,5 @@
+/* ===== EXISTING SITE STYLES ===== */
+
 header {
   background: #011d38;
   padding: 20px 60px;
@@ -9,10 +11,10 @@ body {
 
 .header {
   text-align: left;
-  display: flex;                 /* make the row layout */
-  justify-content: space-between; /* left = title, right = buttons */
-  align-items: center;           /* vertical alignment */
-  flex-wrap: nowrap;             /* prevent stacking */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
   color: rgb(177, 100, 196);
   font-family: Tahoma, sans-serif;
 }
@@ -26,13 +28,13 @@ body {
 }
 
 .header .buttons {
-  display: flex;                 /* line up buttons horizontally */
+  display: flex;
   gap: 15px;
 }
 
 .header button {
   padding: 10px 20px;
-  background: linear-gradient(to top, #005dc2, #00c6ff);;
+  background: linear-gradient(to top, #005dc2, #00c6ff);
   color: #00c6ff;
   border: none;
   border-radius: 5px;
@@ -41,8 +43,8 @@ body {
 }
 
 a {
-  display: block;      /* makes it a block element */
-  margin: 0 auto;      /* centers horizontally */
+  display: block;
+  margin: 0 auto;
   padding: 15px 30px;
   background: linear-gradient(to top, #005dc2, #00c6ff);
   text-align: center;
@@ -58,7 +60,6 @@ a {
 
 .header button:hover {
   background: linear-gradient(to top, #005dc2, #00c6ff);
-  
 }
 
 p {
@@ -73,7 +74,7 @@ p {
   display: block;
   margin: 0 auto;
   width: 600px;
-  height: 600px;  /* sets vertical size */
+  height: 600px;
 }
 
 h1 {
@@ -95,8 +96,8 @@ h2 {
 }
 
 .center-btn {
-  display: block;      /* makes it a block element */
-  margin: 0 auto;      /* centers horizontally */
+  display: block;
+  margin: 0 auto;
   padding: 15px 30px;
   background: linear-gradient(to top, #005dc2, #00c6ff);
   color: 00c6ff;
@@ -139,15 +140,125 @@ input {
   font-size: 18px;
   font-weight: 450;
   padding: 12px 18px;
-  font-size: 16px;
   border: 2px solid rgb(177, 100, 196);
   border-radius: 8px;
   outline: none;
   width: 220px;
   transition: all 0.3s ease;
-  font-family: Tahoma, sans-serif;
   border-color: #07a2f5;
   text-align: center;
-  box-shadow: 0 0 8px rgba(42, 170, 255, 0.6); 
+  box-shadow: 0 0 8px rgba(42, 170, 255, 0.6);
+}
+
+/* ===== PORTFOLIO TRACKER STYLES ===== */
+
+main {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.input-section {
+  background: #02294d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  margin-bottom: 2rem;
+}
+
+.input-section h2 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.input-section form {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.input-section input, .input-section button {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #07a2f5;
+  font-size: 1rem;
+}
+
+.input-section button {
+  background-color: #00c6ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.input-section button:hover {
+  background-color: #005dc2;
+}
+
+.portfolio-section {
+  background: #02294d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.portfolio-section h2 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #011d38;
+  color: white;
+}
+
+th, td {
+  text-align: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #07a2f5;
+}
+
+th {
+  background-color: #003366;
+  font-weight: 600;
+}
+
+.summary-section {
+  background: #02294d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  color: white;
+  text-align: center;
+}
+
+.summary-section p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+  color: #00c6ff;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-top: 3rem;
+}
+
+.positive {
+  color: #73d13d; /* green-ish */
+  font-weight: 600;
+}
+.negative {
+  color: #ff4d4f; /* red-ish */
+  font-weight: 600;
 }
 
