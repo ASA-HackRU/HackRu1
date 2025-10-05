@@ -1,0 +1,4 @@
+# Ignore environment and session data
+.env
+flask_session/
+*.db
