@@ -5,10 +5,41 @@
     <title>AImpulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='analysis.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body { font-family: Arial, sans-serif; background:#011d38; color:white; text-align:center; margin:0; padding:0; }
+      header { background:#011d38; padding:10px; }
+      .header { display:flex; flex-direction:column; align-items:center; }
+      .buttons { margin-top:10px; }
+      a.btn { 
+        display:block; 
+        width:180px; 
+        margin:5px auto; 
+        padding:10px; 
+        background:#00c6ff; 
+        color:white; 
+        text-decoration:none; 
+        border-radius:5px; 
+        text-align:center; 
+        font-weight:bold; 
+      }
+      a.btn:hover { background:#009ed9; }
+      .articles-container { max-width: 900px; margin:20px auto; text-align:left; }
+      .article-card { background:#022a55; padding:15px; margin:10px 0; border-radius:10px; }
+      .analysis { margin-top:10px; font-size:14px; }
+    </style>
 </head>
 <body>
     <header>
-        <h1>AImpulse Sentiment Analysis</h1>
+      <div class="header">
+        <a href="/home" class="btn">AImpulse</a>
+        <div class="buttons">
+          <a href="/track" class="btn">Track</a>
+          <a href="/chatbot" class="btn">Chatbot</a>
+          <a href="/analysis" class="btn">Sentiment</a>
+          <a href="/signout" class="btn">Sign Out</a>
+        </div>
+      </div>
+      <h1>AImpulse Sentiment Analysis</h1>
     </header>
 
     <main>
@@ -24,6 +55,7 @@
                     <div class="analysis">
                         <p><strong>Sentiment:</strong> {{ article['sentiment'] }} | <strong>Score:</strong> {{ article['score'] }}</p>
                         <p><strong>Published:</strong> {{ article['published_at'] }}</p>
+                        <p><a href="{{ article['url'] }}" target="_blank" style="color:#00c6ff;">Read full article</a></p>
                     </div>
                 </div>
                 {% endfor %}

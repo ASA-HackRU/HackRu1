@@ -1,9 +1,9 @@
+from newsapi import NewsAPI
 import sqlite3
-from datetime import datetime
-from newsapi import fetch_articles
 
-DB_FILE = "news.db"
+API_KEY = "sp8yMhbsJEkoyYMJNoDbDyrmEjTxeo5rvJM7Thh0"  # replace with your key
 
+# Top Fortune 500 / major companies list
 COMPANIES = [
     "Amazon", "Walmart", "Apple", "Microsoft", "Tesla",
     "Alphabet", "Facebook", "Meta Platforms", "NVIDIA", "Intel",
@@ -16,53 +16,26 @@ COMPANIES = [
     "Toyota", "Ford", "General Motors", "Nike", "Starbucks"
 ]
 
-def run_pipeline():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
+# Initialize NewsAPI wrapper
+newsapi = NewsAPI(API_KEY)
 
-    # Create table if not exists
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS news (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        company TEXT,
-        title TEXT,
-        content TEXT,
-        sentiment TEXT,
-        score REAL,
-        published_at TEXT
-    )
-    """)
+# Limit calls to 20 companies max
+companies_to_fetch = COMPANIES[:20]
 
-    for company in COMPANIES:
-        # Delete old article for this company
-        c.execute("DELETE FROM news WHERE company = ?", (company,))
+for company in companies_to_fetch:
+    print(f"\nFetching headlines for {company}...")
+    try:
+        results = newsapi.get_top_headlines(company, limit=3)
+        for r in results:
+            print(f"{r['company']} | {r['title']} | Score {r['score']} ({r['strength']})")
+            print(f"Explanation: {r['explanation']}\n")
+    except Exception as e:
+        print(f"Error fetching {company}: {e}")
 
-        # Fetch latest articles
-        articles = fetch_articles(company, limit=1)
-
-        if not articles:
-            print(f"No articles fetched for {company}")
-            continue
-
-        for article in articles:
-            c.execute("""
-            INSERT INTO news (company, title, content, sentiment, score, published_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """, (
-                company,
-                article["title"],
-                article["content"],
-                article["sentiment"],
-                article["score"],
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            ))
-
-        print(f"[{company}] Latest article stored.")
-
-    conn.commit()
-    conn.close()
-    print("Pipeline finished. Database updated with latest articles.")
-
-if __name__ == "__main__":
-    print("=== Starting News Pipeline ===")
-    run_pipeline()
+# Now view a sample of the DB contents
+print("\n--- DATABASE SAMPLE (last 10 entries) ---")
+conn = sqlite3.connect("news.db")
+c = conn.cursor()
+for row in c.execute("SELECT company, title, score, strength FROM news_analysis ORDER BY id DESC LIMIT 10"):
+    print(row)
+conn.close()

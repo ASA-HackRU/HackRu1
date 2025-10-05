@@ -1,48 +1,111 @@
 import requests
-from textblob import TextBlob
+import sqlite3
+from datetime import datetime
+from transformers import pipeline
 
-# Your API key from https://www.thenewsapi.com/
-API_KEY = "YOUR_API_KEY_HERE"
+class NewsAPI:
+    def __init__(self, api_token, db_path="news.db"):
+        self.api_token = api_token
+        self.base_url = "https://api.thenewsapi.com/v1/news/top"
+        self.db_path = db_path
 
-def analyze_sentiment(text):
-    if not text:
-        return "Neutral", 0.0
-    blob = TextBlob(text)
-    polarity = blob.sentiment.polarity
-    if polarity > 0.05:
-        return "Positive", polarity
-    elif polarity < -0.05:
-        return "Negative", polarity
-    else:
-        return "Neutral", polarity
+        # force CPU to avoid MPS hang on Mac
+        self.sentiment = pipeline("sentiment-analysis", model="ProsusAI/finbert", device=-1)
 
-def fetch_articles(company, limit=3):
-    url = f"https://api.thenewsapi.com/v1/news/all?api_token={API_KEY}&search={company}&language=en&limit={limit}&sort=published_at"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
+        # setup database
+        self._init_db()
+
+    def _init_db(self):
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS news_analysis (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company TEXT,
+                title TEXT,
+                url TEXT,
+                score INTEGER,
+                strength TEXT,
+                explanation TEXT,
+                timestamp TEXT
+            )
+        """)
+        conn.commit()
+        conn.close()
+
+    def _classify(self, text):
+        """Run sentiment + map to ImpulseScore + explanation."""
+        result = self.sentiment(text[:512])[0]  # truncate to 512 chars
+        label = result["label"]
+        score = result["score"]
+
+        # map to 1-5 score
+        if label == "negative":
+            if score > 0.75:
+                mapped_score, strength = 1, "large negative"
+            else:
+                mapped_score, strength = 2, "small negative"
+        elif label == "positive":
+            if score > 0.75:
+                mapped_score, strength = 5, "large positive"
+            else:
+                mapped_score, strength = 4, "small positive"
+        else:
+            mapped_score, strength = 3, "neutral"
+
+        # explanation
+        explanation = (
+            f"This article suggests a {strength} market reaction. "
+            f"The model judged the tone as {label} with confidence {score:.2f}. "
+            f"This implies potential {strength} sentiment toward the company’s stock."
+        )
+
+        return mapped_score, strength, explanation
+
+    def get_top_headlines(self, query, limit=3):
+        params = {
+            "api_token": self.api_token,
+            "limit": limit,
+            "language": "en",
+            "search": query
+        }
+        response = requests.get(self.base_url, params=params)
+        if response.status_code != 200:
+            raise Exception(f"API Error {response.status_code}: {response.text}")
+
         data = response.json()
-        articles = []
+        results = []
 
-        for item in data.get("data", []):
-            title = item.get("title", "No Title")
-            description = item.get("description", "")
-            published_at = item.get("published_at", "")
-            url_link = item.get("url", "#")
+        for article in data.get("data", []):
+            title = article.get("title", "")
+            description = article.get("description", "")
+            url = article.get("url", "")
+            combined_text = f"{title}. {description}"
 
-            sentiment, score = analyze_sentiment(f"{title} {description}")
+            score, strength, explanation = self._classify(combined_text)
 
-            articles.append({
-                "company": company,
+            results.append({
+                "company": query,
                 "title": title,
-                "description": description,
-                "sentiment": sentiment,
-                "score": round(score, 2),
-                "timestamp": published_at,
-                "url": url_link
+                "url": url,
+                "score": score,
+                "strength": strength,
+                "explanation": explanation,
+                "timestamp": datetime.utcnow().isoformat()
             })
-        return articles
 
-    except Exception as e:
-        print(f"Error fetching articles for {company}: {e}")
-        return []
+            # save to db
+            self._save_to_db(query, title, url, score, strength, explanation)
+
+        return results
+
+    def _save_to_db(self, company, title, url, score, strength, explanation):
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO news_analysis
+            (company, title, url, score, strength, explanation, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (company, title, url, score, strength, explanation, datetime.utcnow().isoformat()))
+        conn.commit()
+        conn.close()

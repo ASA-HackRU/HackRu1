@@ -11,9 +11,34 @@ import fortune_db
 # Initialize user database
 database.init_db()
 
-# Load environment variables
-load_dotenv()
-genai.api_key = os.getenv("GENAI_API_KEY")  # refers to .env for api key (redacted)
+# ----------------------------
+# Load Gemini API key reliably
+# ----------------------------
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+
+# Load .env file from the same folder as app.py
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(env_path)
+
+# Get API key
+api_key = os.getenv("GENAI_API_KEY")
+if not api_key:
+    raise RuntimeError(
+        "GENAI_API_KEY not found. Make sure your .env file exists and has GENAI_API_KEY=YOUR_KEY"
+    )
+
+# Assign to Gemini SDK
+genai.api_key = api_key
+
+# Also export it for Flask subprocesses
+os.environ["GENAI_API_KEY"] = api_key
+
+print("✅ Gemini API key loaded successfully")
+
+
+
 
 # Flask setup
 app = Flask(__name__)
@@ -66,9 +91,6 @@ def init_memory():
     if "conversation" not in session:
         session["conversation"] = []
 
-# ----------------------------
-# /ask route for Gemini 2.0
-# ----------------------------
 @app.route("/ask", methods=["POST"])
 def ask():
     init_memory()
@@ -76,18 +98,25 @@ def ask():
     if not user_message:
         return jsonify({"reply": "Please enter a message."})
 
+    # Add user's message
     session["conversation"].append({"role": "user", "content": user_message})
 
     try:
-        full_prompt = "\n".join([msg["content"] for msg in session["conversation"]])
+        # Ensure all conversation items are strings
+        full_prompt = "\n".join([str(msg["content"]) for msg in session["conversation"]])
+
+        # Gemini 2.0 Flash
         model = genai.GenerativeModel("gemini-2.0-flash")
         response = model.generate_content(full_prompt)
+
         bot_reply_text = response.text if hasattr(response, "text") else "Gemini didn't respond."
         session["conversation"].append({"role": "assistant", "content": bot_reply_text})
+
     except Exception as e:
         bot_reply_text = f"Error: {str(e)}"
 
     return jsonify({"reply": bot_reply_text})
+
 
 # ----------------------------
 # Page routes
@@ -107,10 +136,6 @@ def home():
 @app.route("/chatbot")
 def chatbot():
     return render_template("chat.html")
-
-@app.route("/track")
-def track():
-    return render_template("track.html")
 
 @app.route("/analysis")
 def analysis():
