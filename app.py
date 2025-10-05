@@ -7,38 +7,25 @@ import sqlite3
 from dotenv import load_dotenv
 import google.generativeai as genai
 import fortune_db
+import yfinance as yf
 
 # Initialize user database
 database.init_db()
 
 # ----------------------------
-# Load Gemini API key reliably
+# Load Gemini API key directly
 # ----------------------------
-from dotenv import load_dotenv
-import os
-import google.generativeai as genai
-
-# Load .env file from the same folder as app.py
-env_path = os.path.join(os.path.dirname(__file__), ".env")
-load_dotenv(env_path)
-
-# Get API key
-api_key = os.getenv("GENAI_API_KEY")
-if not api_key:
-    raise RuntimeError(
-        "GENAI_API_KEY not found. Make sure your .env file exists and has GENAI_API_KEY=YOUR_KEY"
-    )
+# <<< PUT YOUR API KEY HERE >>>
+api_key = "AIzaSyDFETfp7VBvnsGLA52NQ9lN7xWuvzEdGTQ"
 
 # Assign to Gemini SDK
-genai.api_key = api_key
-
-# Also export it for Flask subprocesses
-os.environ["GENAI_API_KEY"] = api_key
+genai.configure(api_key=api_key)  # Use configure() for the latest SDK
 
 print("✅ Gemini API key loaded successfully")
 
-
-
+# Also export it for Flask subprocesses
+os.environ["AIzaSyDFETfp7VBvnsGLA52NQ9lN7xWuvzEdGTQ"] = api_key
+print("✅ Gemini API key loaded successfully")
 
 # Flask setup
 app = Flask(__name__)
@@ -137,19 +124,44 @@ def home():
 def chatbot():
     return render_template("chat.html")
 
+# ----------------------------
+# Analysis page (fixed)
+# ----------------------------
+DB_PATH = "news.db"  # adjust path if needed
+
+def get_articles():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row  # lets us access columns by name
+    c = conn.cursor()
+    c.execute("""
+        SELECT company, title, explanation AS content, strength AS sentiment, score, timestamp AS published_at, '#' AS url
+        FROM news_analysis
+        ORDER BY timestamp DESC
+        LIMIT 50
+    """)
+    rows = c.fetchall()
+    conn.close()
+
+    # Convert to list of dicts for Jinja
+    articles = []
+    for row in rows:
+        articles.append({
+            "company": row["company"],
+            "title": row["title"],
+            "content": row["content"],
+            "sentiment": row["sentiment"],
+            "score": row["score"],
+            "published_at": row["published_at"],
+            "url": row["url"]
+        })
+
+    return articles
+
 @app.route("/analysis")
 def analysis():
-    # Fetch all articles from the fortune500_news.db
-    conn = sqlite3.connect("fortune500_news.db")
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM news ORDER BY id DESC")
-    articles = c.fetchall()
-    conn.close()
+    articles = get_articles()
     return render_template("analysis.html", articles=articles)
 
-
-import yfinance as yf
 
 # ----------------------------
 # Portfolio API
@@ -252,10 +264,8 @@ def api_update_prices():
     return jsonify({"ok": True})
 
 
-
 # ----------------------------
 # Run Flask
 # ----------------------------
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-

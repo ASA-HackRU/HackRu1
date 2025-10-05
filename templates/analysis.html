@@ -6,40 +6,104 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='analysis.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-      body { font-family: Arial, sans-serif; background:#011d38; color:white; text-align:center; margin:0; padding:0; }
-      header { background:#011d38; padding:10px; }
-      .header { display:flex; flex-direction:column; align-items:center; }
-      .buttons { margin-top:10px; }
-      a.btn { 
-        display:block; 
-        width:180px; 
-        margin:5px auto; 
-        padding:10px; 
-        background:#00c6ff; 
+      body { 
+        font-family: Arial, sans-serif; 
+        background:#011d38; 
         color:white; 
-        text-decoration:none; 
-        border-radius:5px; 
         text-align:center; 
-        font-weight:bold; 
+        margin:0; 
+        padding:0; 
       }
-      a.btn:hover { background:#009ed9; }
-      .articles-container { max-width: 900px; margin:20px auto; text-align:left; }
-      .article-card { background:#022a55; padding:15px; margin:10px 0; border-radius:10px; }
-      .analysis { margin-top:10px; font-size:14px; }
+
+      header { 
+        background:#011d38; 
+        padding:10px; 
+      }
+
+      .header {
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+      }
+
+      .buttons {
+        display: flex; 
+        justify-content: center; 
+        gap: 10px; 
+        margin-top: 10px;
+      }
+
+      .buttons a, .header .main-btn {
+        display: inline-block;
+        width: 180px;
+        padding: 10px 0;
+        text-align: center;
+        background: linear-gradient(to top, #005dc2, #00c6ff);
+        color: #fff;
+        font-family: Tahoma, sans-serif;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: large;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .buttons a:hover, .header .main-btn:hover {
+        background: linear-gradient(to top, #0070e0, #33d9ff);
+      }
+
+      .articles-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        gap: 15px;
+      }
+
+      .article-card {
+        background: #02284d;
+        border-radius: 10px;
+        padding: 15px;
+        width: 90%;
+        max-width: 800px;
+        text-align: left;
+      }
+
+      .article-card h2 {
+        margin: 0 0 10px 0;
+        font-size: 1.2em;
+      }
+
+      .description {
+        margin-bottom: 10px;
+      }
+
+      .analysis p {
+        margin: 5px 0;
+      }
+
+      .analysis a {
+        color:#00c6ff;
+        text-decoration: none;
+      }
+
+      .analysis a:hover {
+        text-decoration: underline;
+      }
     </style>
 </head>
 <body>
     <header>
       <div class="header">
-        <a href="/home" class="btn">AImpulse</a>
-        <div class="buttons">
-          <a href="/track" class="btn">Track</a>
-          <a href="/chatbot" class="btn">Chatbot</a>
-          <a href="/analysis" class="btn">Sentiment</a>
-          <a href="/signout" class="btn">Sign Out</a>
-        </div>
+          <!-- Main AImpulse button linking to landing -->
+          <a href="/home" class="main-btn" style="margin-bottom: 10px;">AImpulse</a>
+          <div class="buttons">
+            <a href="/analysis">Analysis</a>
+            <a href="/chatbot">Chatbot</a>
+            <a href="/landing">Sign Out</a>
+          </div>
       </div>
-      <h1>AImpulse Sentiment Analysis</h1>
+      <h1 style="margin-top:20px;">AImpulse Sentiment Analysis</h1>
     </header>
 
     <main>
@@ -47,15 +111,15 @@
             {% if articles %}
                 {% for article in articles %}
                 <div class="article-card">
-                    <h2>{{ article['company'] }} - {{ article['title'] }}</h2>
-                    {% if article['content'] %}
-                    <p class="description">{{ article['content'] }}</p>
+                    <h2>{{ article.company }} - {{ article.title }}</h2>
+                    {% if article.content %}
+                    <p class="description">{{ article.content }}</p>
                     {% endif %}
 
                     <div class="analysis">
-                        <p><strong>Sentiment:</strong> {{ article['sentiment'] }} | <strong>Score:</strong> {{ article['score'] }}</p>
-                        <p><strong>Published:</strong> {{ article['published_at'] }}</p>
-                        <p><a href="{{ article['url'] }}" target="_blank" style="color:#00c6ff;">Read full article</a></p>
+                        <p><strong>Sentiment:</strong> {{ article.sentiment or 'N/A' }} | <strong>Score:</strong> {{ article.score or 'N/A' }}</p>
+                        <p><strong>Published:</strong> {{ article.published_at }}</p>
+                        <p><a href="{{ article.url }}" target="_blank">Read full article</a></p>
                     </div>
                 </div>
                 {% endfor %}
