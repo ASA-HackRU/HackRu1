@@ -1,0 +1,81 @@
+/* General body setup */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #011d38; /* dark navy background */
+    color: white; /* text white */
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+header {
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Articles container */
+.articles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 900px;
+    margin: auto;
+    overflow-y: auto;
+    height: calc(100vh - 100px);
+}
+
+/* Article cards */
+.article-card {
+    background-color: #011d38; /* match body for uniform dark look */
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* slightly stronger shadow for dark */
+    border: 1px solid #1f2d4c; /* subtle border to define card edges */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+}
+
+/* Article headings */
+.article-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    color: white;
+}
+
+/* Article description */
+.description {
+    font-size: 1rem;
+    color: #cfd8e0; /* light grey for readability on dark bg */
+    margin-bottom: 1rem;
+}
+
+/* Analysis section */
+.analysis p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+    color: #e0e0e0;
+}
+
+/* Read link */
+.read-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background-color: #4facfe;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.read-link:hover {
+    background-color: #00f2fe;
+}

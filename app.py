@@ -10,6 +10,7 @@ import sqlite3
 
 database.init_db()
 
+genai.configure(api_key=os.getenv("AIzaSyDOm-BROi6sZ3BseBWzWI7GfZ0PkGwxMD0"))
 
 # Flask setup
 app = Flask(__name__)
@@ -63,30 +64,36 @@ def init_memory():
     if "conversation" not in session:
         session["conversation"] = []
 
-# /ask route for Gemini 2.0
 @app.route("/ask", methods=["POST"])
 def ask():
-    init_memory()
-    user_message = request.json.get("message")
+    # Initialize session memory if it doesn't exist
+    if "conversation" not in session:
+        session["conversation"] = []
 
-    # Add user message to system memory of Gemini
+    user_message = request.json.get("message")
+    if not user_message:
+        return jsonify({"reply": "Please enter a message."})
+
+    # Append user message to session memory
     session["conversation"].append({"role": "user", "content": user_message})
 
     try:
-        response = genai.chat.create(
-            model="gemini-2.0-flash",
-            messages=session["conversation"]
-        )
-        bot_reply = response.last
-        if not bot_reply or not hasattr(bot_reply, "content"):
-            bot_reply_text = "Sorry, Gemini didn't respond."
-        else:
-            bot_reply_text = bot_reply.content
-            session["conversation"].append({"role": "assistant", "content": bot_reply_text})
+        # Combine all previous messages into one prompt for Gemini
+        full_prompt = "\n".join([msg["content"] for msg in session["conversation"]])
+
+        # Generate response from Gemini
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(full_prompt)
+        bot_reply_text = response.text if hasattr(response, "text") else "Gemini didn't respond."
+
+        # Save Gemini's reply in session memory
+        session["conversation"].append({"role": "assistant", "content": bot_reply_text})
+
     except Exception as e:
         bot_reply_text = f"Error: {str(e)}"
 
     return jsonify({"reply": bot_reply_text})
+
 
 # Page routes
 @app.route('/landing')
